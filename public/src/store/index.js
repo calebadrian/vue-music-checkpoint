@@ -37,7 +37,6 @@ var store = new vuex.Store({
       itunesDB
         .get(artist)
         .then(res => {
-          console.log(res.data.results)
           commit('setResults', res.data.results)
         })
         .catch(err => {
@@ -66,10 +65,26 @@ var store = new vuex.Store({
         })
       //this will post to your server adding a new track to your tunes
     },
-    removeTrack({ commit, dispatch }, track) {
+    removeFromPlaylist({ commit, dispatch }, track) {
+      myDB
+        .delete('playlist/' + track._id, track)
+        .then(res => {
+          dispatch('getMyPlaylist')
+        })
+        .catch(err => {
+          console.error(err)
+        })
       //Removes track from the database with delete
     },
-    promoteTrack({ commit, dispatch }, track) {
+    setPlaylist({ commit, dispatch }, tracks) {
+      myDB
+        .put('playlist', tracks)
+        .then(res => {
+          commit('setMyPlaylist', res.data)
+        })
+        .catch(err => {
+          console.error(err)
+        })
       //this should increase the position / upvotes and downvotes on the track
     },
     demoteTrack({ commit, dispatch }, track) {
