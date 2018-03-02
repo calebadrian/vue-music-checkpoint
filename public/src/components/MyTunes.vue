@@ -4,6 +4,11 @@
         <div class="row">
             <div class="col-sm-12 d-flex flex-column" v-for="song in myPlaylist">
                 <div class="d-flex justify-content-between align-items-center pb-3 pt-3">
+                    <audio class="full-width" :id="song._id">
+                        <source :src="song.previewUrl">
+                    </audio>
+                    <i class="fas fa-2x fa-play-circle" @click="checkPlay(song)" :id="song.trackId"></i>
+                    <i class="fas fa-2x fa-volume-up" @click="mute(song)" :id="song.trackName"></i>
                     <h5>{{song.trackName}}</h5>
                     <h6>{{song.artistName}}</h6>
                     <h6>{{song.collectionName}}</h6>
@@ -14,9 +19,6 @@
                         <i @click="demotePlaylist(song)" class="fas fa-arrow-down"></i>
                     </div>
                 </div>
-                <audio class="full-width" @play="checkPlay(song._id)" :id="song._id" controls>
-                    <source :src="song.previewUrl">
-                </audio>
             </div>
         </div>
     </div>
@@ -30,7 +32,7 @@
         },
         data() {
             return {
-
+                playing: false
             }
         },
         methods: {
@@ -69,21 +71,49 @@
                 }
                 this.$store.dispatch('setPlaylist', this.$store.state.myPlaylist)
             },
-            checkPlay(songid) {
+            checkPlay(song) {
                 for (var i = 0; i < this.$store.state.myPlaylist.length; i++){
                     var mySong = this.$store.state.myPlaylist[i]
-                    if (mySong._id == songid){
-                        document.getElementById(mySong._id).play()
+                    if (mySong._id == song._id){
+                        var audioElem = document.getElementById(mySong._id)
+                        var playElem = document.getElementById(mySong.trackId)
+                        if (audioElem.paused){
+                            audioElem.play()
+                            playElem.classList.remove('fa-play-circle')
+                            playElem.classList.add('fa-pause-circle')
+                        } else {
+                            audioElem.pause()
+                            playElem.classList.remove('fa-pause-circle')
+                            playElem.classList.add('fa-play-circle')
+                        }
                     } else {
                         document.getElementById(mySong._id).pause()
+                        var pauseElem = document.getElementById(mySong.trackId)
+                        if (pauseElem.classList.contains('fa-pause-circle')){
+                            pauseElem.classList.remove('fa-pause-circle')
+                            pauseElem.classList.add('fa-play-circle')
+                        }
                     }
+                }
+            },
+            mute(song){
+                var muteElem = document.getElementById(song._id)
+                var muteSymbol = document.getElementById(song.trackName)
+                muteElem.muted = !muteElem.muted
+                if (muteSymbol.classList.contains('fa-volume-up')){
+                    muteSymbol.classList.remove('fa-volume-up')
+                    muteSymbol.classList.add('fa-volume-off')
+                } else {
+                    muteSymbol.classList.remove('fa-volume-off')
+                    muteSymbol.classList.add('fa-volume-up')
                 }
             }
         },
         computed: {
             myPlaylist() {
                 return this.$store.state.myPlaylist
-            }
+            },
+
         }
     }
 
