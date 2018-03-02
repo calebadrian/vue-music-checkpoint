@@ -14,7 +14,7 @@
                         <i @click="demotePlaylist(song)" class="fas fa-arrow-down"></i>
                     </div>
                 </div>
-                <audio class="full-width" controls>
+                <audio class="full-width" @play="checkPlay(song._id)" :id="song._id" controls>
                     <source :src="song.previewUrl">
                 </audio>
             </div>
@@ -68,6 +68,16 @@
                     }
                 }
                 this.$store.dispatch('setPlaylist', this.$store.state.myPlaylist)
+            },
+            checkPlay(songid) {
+                for (var i = 0; i < this.$store.state.myPlaylist.length; i++){
+                    var mySong = this.$store.state.myPlaylist[i]
+                    if (mySong._id == songid){
+                        document.getElementById(mySong._id).play()
+                    } else {
+                        document.getElementById(mySong._id).pause()
+                    }
+                }
             }
         },
         computed: {
