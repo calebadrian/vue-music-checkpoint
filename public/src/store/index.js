@@ -65,7 +65,7 @@ var store = new vuex.Store({
       myDB
         .get('playlists/' + payload._id)
         .then(res => {
-          commit('setMyPlaylist', res.data)
+          commit('setActivePlaylist', res.data)
         })
         .catch(err => {
           console.error(err)
@@ -128,10 +128,16 @@ var store = new vuex.Store({
       commit('setActivePlaylist', payload)
       dispatch('getPlaylistSongs', payload)
     },
-    demoteTrack({ commit, dispatch }, track) {
-      //this should decrease the position / upvotes and downvotes on the track
-    }
-
+    setPlaylistOrder({commit, dispatch}, payload){
+      myDB
+        .put('playlists/' + payload.playlist._id + '/tracks/', payload.map)
+        .then(res => {
+          commit('setActivePlaylist', res.data)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
   }
 })
 

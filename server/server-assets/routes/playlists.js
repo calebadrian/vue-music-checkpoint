@@ -69,6 +69,37 @@ router.put('/api/playlists/:playlistid', (req, res, next) => {
         })
         .catch(next)
 })
+
+router.put('/api/playlists/:playlistid/tracks', (req, res, next) => {
+    Playlists.findById(req.params.playlistid)
+        .then(playlist => {
+            var newArr = req.body.map(elem => {
+                return playlist.songs.find(obj => {
+                    return obj._id === elem
+                })
+            })
+            for (var i = 0; i < playlist.songs.length; i++){
+                playlist.songs.set(i, newArr[i])
+                playlist.markModified('songs')
+                playlist.save()
+            }
+            res.send(playlist)
+        })
+        .catch(next)
+})
+
+router.put('/api/playlists/:playlistid', (req, res, next) => {
+    Playlists.findById(req.params.playlistid)
+        .then(playlist => {
+            for (var i = 0; i < req.body.length; i++){
+                playlist.songs.set(i, req.body[i])
+                playlist.markModified('songs')
+                playlist.save()
+            }
+            res.send(playlist)
+        })
+        .catch(next)
+})
 router.delete("/api/playlists/:playlistid/tracks/:trackid", (req, res, next) => {
     Tracks.findByIdAndRemove(req.params.trackid)
         .then(track => {

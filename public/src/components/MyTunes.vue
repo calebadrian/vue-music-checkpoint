@@ -5,7 +5,7 @@
             <div v-for="playlist in myPlaylists">
                 <h5 class="d-block" @click="setActivePlaylist(playlist)">{{playlist.name}}</h5>
             </div>
-            <div class="col-sm-12 d-flex flex-column" v-for="song in mySongs">
+            <div class="col-sm-12 d-flex flex-column" v-for="song in myPlaylist.songs">
                 <div class="d-flex justify-content-between align-items-center pb-3 pt-3">
                     <audio class="full-width" :id="song._id">
                         <source :src="song.previewUrl">
@@ -42,19 +42,22 @@
         },
         methods: {
             removeFromPlaylist(song) {
-                this.$store.dispatch('removeFromPlaylistTracks', song)
                 this.$store.dispatch('removeFromPlaylist', song)
+                this.$store.dispatch('removeFromPlaylistTracks', song)
             },
             promotePlaylist(song) {
                 var map = []
-                for (var i = 0; i < this.$store.state.activeSongs.length; i++){
-                    var mySong = this.$store.state.activeSongs[i]
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                    var mySong = this.$store.state.activePlaylist.songs[i]
                     if (mySong._id == song._id){
-                        this.$store.state.activeSongs.splice(i, 1)
-                        this.$store.state.activeSongs.splice(i - 1, 0, song)
+                        this.$store.state.activePlaylist.songs.splice(i, 1)
+                        this.$store.state.activePlaylist.songs.splice(i - 1, 0, song)
                     }
                 }
-                this.$store.dispatch('setPlaylist', {playlistId: this.$store.state.activePlaylist._id, songs: this.$store.state.activeSongs})
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                    map[i] = this.$store.state.activePlaylist.songs[i]._id
+                }
+                this.$store.dispatch('setPlaylistOrder', {playlist: this.$store.state.activePlaylist, map: map})
             },
             demotePlaylist(song) {
                 var map = []
