@@ -20,8 +20,7 @@ var store = new vuex.Store({
   state: {
     myPlaylists: [],
     results: [],
-    activePlaylist: {},
-    activeSongs: []
+    activePlaylist: {}
   },
   mutations: {
     setResults(state, results) {
@@ -36,9 +35,6 @@ var store = new vuex.Store({
     setActivePlaylist(state, payload){
       state.activePlaylist = payload
     },
-    setActivePlaylistSongs(state, payload){
-      state.activeSongs = payload
-    }
   },
   actions: {
     getMusicByArtist({ commit, dispatch }, artist) {
@@ -72,16 +68,6 @@ var store = new vuex.Store({
         })
       //this should send a get request to your server to return the list of saved tunes
     },
-    getPlaylistSongs({commit, dispatch}, payload){
-      myDB
-        .get('playlists/' + payload._id + '/tracks/')
-          .then(res => {
-            commit('setActivePlaylistSongs', res.data)
-          }) 
-          .catch(err => {
-            console.error(err)
-          })
-    },
     createSong({ commit, dispatch }, payload) {
       myDB
         .post('playlists/' + payload.playlist._id + '/tracks', payload.track)
@@ -97,7 +83,7 @@ var store = new vuex.Store({
       myDB
         .post('playlists/' + payload.playlist._id, payload.track)
         .then(res => {
-          commit('setActivePlaylistSongs', res.data.songs)
+          commit('setActivePlaylist', res.data)
         })
         .catch(err => {
           console.error(err)
@@ -118,7 +104,7 @@ var store = new vuex.Store({
       myDB
         .put('playlists/' + track.playlistId, track)
         .then(res => {
-          dispatch('getPlaylistSongs', res.data)
+          commit('setActivePlaylist', res.data)
         })
         .catch(err => {
           console.error(err)
@@ -126,7 +112,6 @@ var store = new vuex.Store({
     },
     setActivePlaylist({commit, dispatch}, payload){
       commit('setActivePlaylist', payload)
-      dispatch('getPlaylistSongs', payload)
     },
     setPlaylistOrder({commit, dispatch}, payload){
       myDB

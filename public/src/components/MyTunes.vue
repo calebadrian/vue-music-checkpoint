@@ -61,14 +61,17 @@
             },
             demotePlaylist(song) {
                 var map = []
-                for (var i = 0; i <this.$store.state.activeSongs.length; i++){
-                    var mySong = this.$store.state.activeSongs[i]
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                    var mySong = this.$store.state.activePlaylist.songs[i]
                     if (mySong._id == song._id){
-                        this.$store.state.activeSongs.splice(i, 1)
-                        this.$store.state.activeSongs.splice(i + 1, 0, song)
+                        this.$store.state.activePlaylist.songs.splice(i, 1)
+                        this.$store.state.activePlaylist.songs.splice(i + 1, 0, song)
                     }
                 }
-                this.$store.dispatch('setPlaylist', {playlistId: this.$store.state.activePlaylist._id, songs: this.$store.state.activeSongs})
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                    map[i] = this.$store.state.activePlaylist.songs[i]._id
+                }
+                this.$store.dispatch('setPlaylistOrder', {playlist: this.$store.state.activePlaylist, map: map})
             },
             checkPlay(song) {
                 for (var i = 0; i < this.$store.state.activeSongs.length; i++){
@@ -117,11 +120,7 @@
             },
             myPlaylist() {
                 return this.$store.state.activePlaylist
-            },
-            mySongs() {
-                return this.$store.state.activeSongs
             }
-
         }
     }
 
