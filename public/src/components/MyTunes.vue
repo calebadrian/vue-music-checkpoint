@@ -2,21 +2,26 @@
     <div class="my-tunes">
         <h1>List of MyTunes</h1>
         <div class="row">
-            <div class="col-sm-12 d-flex flex-column" v-for="song in myPlaylist">
+            <div v-for="playlist in myPlaylists">
+                <h5 class="d-block" @click="setActivePlaylist(playlist)">{{playlist.name}}</h5>
+            </div>
+            <div class="col-sm-12 d-flex flex-column" v-for="song in mySongs">
                 <div class="d-flex justify-content-between align-items-center pb-3 pt-3">
                     <audio class="full-width" :id="song._id">
                         <source :src="song.previewUrl">
                     </audio>
-                    <i class="fas fa-2x fa-play-circle" @click="checkPlay(song)" :id="song.trackId"></i>
+                    <i class="fas fa-2x fa-play-circle play" @click="checkPlay(song)" :id="song.trackId"></i>
                     <i class="fas fa-2x fa-volume-up" @click="mute(song)" :id="song.trackName"></i>
-                    <h5>{{song.trackName}}</h5>
-                    <h6>{{song.artistName}}</h6>
+                    <div class="d-flex flex-column text-center">
+                        <h5>{{song.trackName}}</h5>
+                        <h6>by {{song.artistName}}</h6>
+                    </div>
                     <h6>{{song.collectionName}}</h6>
-                    <h6>{{song.trackPrice}}</h6>
+                    <h6>${{song.trackPrice}}</h6>
                     <div class="d-flex flex-column justify-content-between">
-                        <i @click="promotePlaylist(song)" class="fas fa-arrow-up"></i>
-                        <i @click="removeFromPlaylist(song)" class="fas fa-minus-circle mt-1 mb-1"></i>
-                        <i @click="demotePlaylist(song)" class="fas fa-arrow-down"></i>
+                    <i @click="promotePlaylist(song)" class="fas fa-arrow-up"></i>
+                    <i @click="removeFromPlaylist(song)" class="fas fa-minus-circle mt-1 mb-1"></i>
+                    <i @click="demotePlaylist(song)" class="fas fa-arrow-down"></i>
                     </div>
                 </div>
             </div>
@@ -28,7 +33,7 @@
     export default {
         name: 'My-Tunes',
         mounted() {
-            this.$store.dispatch('getMyPlaylist')
+            this.$store.dispatch('getMyPlaylists')
         },
         data() {
             return {
@@ -37,43 +42,34 @@
         },
         methods: {
             removeFromPlaylist(song) {
+                this.$store.dispatch('removeFromPlaylistTracks', song)
                 this.$store.dispatch('removeFromPlaylist', song)
             },
             promotePlaylist(song) {
-                for (var i = 0; i < this.$store.state.myPlaylist.length; i++) {
-                    var mySong = this.$store.state.myPlaylist[i]
-                    if (mySong._id == song._id) {
-                        for (var prop in this.$store.state.myPlaylist[i]) {
-                            if (prop != '_id') {
-                                var temp = this.$store.state.myPlaylist[i - 1][prop]
-                                this.$store.state.myPlaylist[i - 1][prop] = this.$store.state.myPlaylist[i][prop]
-                                this.$store.state.myPlaylist[i][prop] = temp
-                            }
-                        }
-                        break
+                var map = []
+                for (var i = 0; i < this.$store.state.activeSongs.length; i++){
+                    var mySong = this.$store.state.activeSongs[i]
+                    if (mySong._id == song._id){
+                        this.$store.state.activeSongs.splice(i, 1)
+                        this.$store.state.activeSongs.splice(i - 1, 0, song)
                     }
                 }
-                this.$store.dispatch('setPlaylist', this.$store.state.myPlaylist)
+                this.$store.dispatch('setPlaylist', {playlistId: this.$store.state.activePlaylist._id, songs: this.$store.state.activeSongs})
             },
             demotePlaylist(song) {
-                for (var i = 0; i < this.$store.state.myPlaylist.length; i++) {
-                    var mySong = this.$store.state.myPlaylist[i]
-                    if (mySong._id == song._id) {
-                        for (var prop in this.$store.state.myPlaylist[i]) {
-                            if (prop != '_id') {
-                                var temp = this.$store.state.myPlaylist[i + 1][prop]
-                                this.$store.state.myPlaylist[i + 1][prop] = this.$store.state.myPlaylist[i][prop]
-                                this.$store.state.myPlaylist[i][prop] = temp
-                            }
-                        }
-                        break
+                var map = []
+                for (var i = 0; i <this.$store.state.activeSongs.length; i++){
+                    var mySong = this.$store.state.activeSongs[i]
+                    if (mySong._id == song._id){
+                        this.$store.state.activeSongs.splice(i, 1)
+                        this.$store.state.activeSongs.splice(i + 1, 0, song)
                     }
                 }
-                this.$store.dispatch('setPlaylist', this.$store.state.myPlaylist)
+                this.$store.dispatch('setPlaylist', {playlistId: this.$store.state.activePlaylist._id, songs: this.$store.state.activeSongs})
             },
             checkPlay(song) {
-                for (var i = 0; i < this.$store.state.myPlaylist.length; i++){
-                    var mySong = this.$store.state.myPlaylist[i]
+                for (var i = 0; i < this.$store.state.activeSongs.length; i++){
+                    var mySong = this.$store.state.activeSongs[i]
                     if (mySong._id == song._id){
                         var audioElem = document.getElementById(mySong._id)
                         var playElem = document.getElementById(mySong.trackId)
@@ -107,12 +103,21 @@
                     muteSymbol.classList.remove('fa-volume-off')
                     muteSymbol.classList.add('fa-volume-up')
                 }
+            },
+            setActivePlaylist(playlist){
+                this.$store.dispatch('setActivePlaylist', playlist)
             }
         },
         computed: {
-            myPlaylist() {
-                return this.$store.state.myPlaylist
+            myPlaylists() {
+                return this.$store.state.myPlaylists
             },
+            myPlaylist() {
+                return this.$store.state.activePlaylist
+            },
+            mySongs() {
+                return this.$store.state.activeSongs
+            }
 
         }
     }
@@ -122,5 +127,9 @@
 <style>
     .full-width {
         width: 100%;
+    }
+    .play:hover{
+        transition: linear all .3s;
+        color: blue
     }
 </style>

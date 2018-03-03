@@ -35,12 +35,16 @@ export default {
             this.$store.dispatch('getMusicByArtist', this.artist)
         },
         addToMyPlaylist(track) {
-            this.$store.dispatch('addToMyPlaylist', track)
+            track.playlistId = this.$store.state.activePlaylist._id
+            this.$store.dispatch('createSong', {playlist: this.$store.state.activePlaylist, track: track})
         }
     },
     computed: {
         results() {
             return this.$store.state.results
+        },
+        myPlaylist() {
+            return this.$store.state.activePlaylist
         }
     }
 }

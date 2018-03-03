@@ -2,6 +2,7 @@
   <div class="home">
     <!-- YOU WILL PROBABLY END UP WITH SOMETHING LIKE THIS -->
       <itunes class="itunes col-sm-6"></itunes>
+      <!-- <i class="fas fa-2x fa-arrow-left" @click="toggleHidden"></i> -->
       <my-tunes class="my-tunes col-sm-6"></my-tunes>
   </div>
 </template>
@@ -13,12 +14,17 @@
     name: 'home',
     data() {
       return {
-
+        hidden: true
       }
     },
     components: {
       Itunes,
       MyTunes
+    },
+    methods: {
+      toggleHidden() {
+        this.hidden = !this.hidden
+      }
     }
   }
 </script>

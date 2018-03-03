@@ -18,15 +18,7 @@ router.post("/api/playlist", (req, res, next) => {
 })
 
 router.put("/api/playlist", (req, res, next) => {
-    var out = req.body
-    for (var i = 0; i < req.body.length; i++){
-        Tracks.findOneAndUpdate({_id: req.body[i]._id}, req.body[i], {new: true})
-            .then(track => {
-                out[i] = track
-            })
-            .catch(next)
-    }
-    res.send(out)
+    
 })
 
 router.delete("/api/playlist/:songid", (req, res, next) => {

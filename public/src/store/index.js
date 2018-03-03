@@ -18,18 +18,26 @@ let myDB = axios.create({
 
 var store = new vuex.Store({
   state: {
-    myPlaylist: [],
-    results: []
+    myPlaylists: [],
+    results: [],
+    activePlaylist: {},
+    activeSongs: []
   },
   mutations: {
     setResults(state, results) {
       state.results = results
     },
-    setMyPlaylist(state, payload){
-      state.myPlaylist = payload
+    setMyPlaylists(state, payload){
+      state.myPlaylists = payload
     },
     addToMyPlaylist(state, payload){
-      state.myPlaylist.push(payload)
+      state.activePlaylist.push(payload)
+    },
+    setActivePlaylist(state, payload){
+      state.activePlaylist = payload
+    },
+    setActivePlaylistSongs(state, payload){
+      state.activeSongs = payload
     }
   },
   actions: {
@@ -43,9 +51,19 @@ var store = new vuex.Store({
           console.error(err)
         })
     },
-    getMyPlaylist({ commit, dispatch }) {
+    getMyPlaylists({commit, dispatch}){
       myDB
-        .get('playlist')
+        .get('playlists/')
+          .then(res => {
+            commit('setMyPlaylists', res.data)
+          })
+          .catch(err => {
+            console.error(err)
+          })
+    },
+    getMyPlaylist({ commit, dispatch }, payload) {
+      myDB
+        .get('playlists/' + payload._id)
         .then(res => {
           commit('setMyPlaylist', res.data)
         })
@@ -54,38 +72,61 @@ var store = new vuex.Store({
         })
       //this should send a get request to your server to return the list of saved tunes
     },
-    addToMyPlaylist({ commit, dispatch }, track) {
+    getPlaylistSongs({commit, dispatch}, payload){
       myDB
-        .post('playlist', track)
+        .get('playlists/' + payload._id + '/tracks/')
+          .then(res => {
+            commit('setActivePlaylistSongs', res.data)
+          }) 
+          .catch(err => {
+            console.error(err)
+          })
+    },
+    createSong({ commit, dispatch }, payload) {
+      myDB
+        .post('playlists/' + payload.playlist._id + '/tracks', payload.track)
         .then(res => {
-          commit('addToMyPlaylist', res.data)
+          dispatch('addToPlaylist', {playlist: payload.playlist, track: res.data})
         })
         .catch(err => {
           console.error(err)
         })
       //this will post to your server adding a new track to your tunes
     },
-    removeFromPlaylist({ commit, dispatch }, track) {
+    addToPlaylist({commit, dispatch}, payload){
       myDB
-        .delete('playlist/' + track._id, track)
+        .post('playlists/' + payload.playlist._id, payload.track)
         .then(res => {
-          dispatch('getMyPlaylist')
+          commit('setActivePlaylistSongs', res.data.songs)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+    removeFromPlaylistTracks({ commit, dispatch }, track) {
+      myDB
+        .delete('playlists/' + track.playlistId + '/tracks/' + track._id)
+        .then(res => {
+          
         })
         .catch(err => {
           console.error(err)
         })
       //Removes track from the database with delete
     },
-    setPlaylist({ commit, dispatch }, tracks) {
+    removeFromPlaylist({commit, dispatch}, track){
       myDB
-        .put('playlist', tracks)
+        .put('playlists/' + track.playlistId, track)
         .then(res => {
-          commit('setMyPlaylist', res.data)
+          dispatch('getPlaylistSongs', res.data)
         })
         .catch(err => {
           console.error(err)
         })
-      //this should increase the position / upvotes and downvotes on the track
+    },
+    setActivePlaylist({commit, dispatch}, payload){
+      commit('setActivePlaylist', payload)
+      dispatch('getPlaylistSongs', payload)
     },
     demoteTrack({ commit, dispatch }, track) {
       //this should decrease the position / upvotes and downvotes on the track

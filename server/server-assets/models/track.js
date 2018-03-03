@@ -10,7 +10,8 @@ var schema = new Schema({
     artistName: {type: String, required: true},
     collectionName: {type: String},
     trackPrice: {type: Number},
-    previewUrl: {type: String}
+    previewUrl: {type: String},
+    playlistId: {type: ObjectId, ref: 'Playlist', required: true}
 })
 
 module.exports = mongoose.model(SchemaName, schema)
