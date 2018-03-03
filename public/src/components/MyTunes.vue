@@ -66,6 +66,7 @@
                     if (mySong._id == song._id){
                         this.$store.state.activePlaylist.songs.splice(i, 1)
                         this.$store.state.activePlaylist.songs.splice(i + 1, 0, song)
+                        break;
                     }
                 }
                 for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
