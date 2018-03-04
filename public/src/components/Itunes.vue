@@ -1,11 +1,5 @@
 <template>
     <div class="itunes">
-        <h1>iTunes Search</h1>
-        <form @submit.prevent="musicSearch">
-            <input type="text" v-model="artist" placeholder="artist">
-            <button class="btn-success" type="submit">Search Itunes</button>
-            <button class="btn-danger" type="reset">Reset Form</button>
-        </form>
         <div class="row">
             <div v-for="result in results" class="col-sm-6 text-center">
                 <img :src="result.artworkUrl100">
@@ -31,10 +25,14 @@ export default {
         }
     },
     methods: {
-        musicSearch() {
-            this.$store.dispatch('getMusicByArtist', this.artist)
-        },
         addToMyPlaylist(track) {
+            for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                var inPlaylist = this.$store.state.activePlaylist.songs[i]
+                if (inPlaylist.trackId == track.trackId){
+                    alert(track.trackName + " is already in this playlist!")
+                    return
+                }
+            }
             track.playlistId = this.$store.state.activePlaylist._id
             this.$store.dispatch('createSong', {playlist: this.$store.state.activePlaylist, track: track})
         }

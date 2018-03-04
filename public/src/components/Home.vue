@@ -1,9 +1,17 @@
 <template>
   <div class="home">
+    <div class="col-sm-12 d-flex flex-column align-items-center head">
+        <h1>iTunes Search</h1>
+        <form @submit.prevent="musicSearch">
+            <input type="text" v-model="artist" placeholder="artist">
+            <button class="btn-success" type="submit">Search Itunes</button>
+            <button class="btn-danger" type="reset">Reset Form</button>
+        </form>
+    </div>
     <!-- YOU WILL PROBABLY END UP WITH SOMETHING LIKE THIS -->
-      <itunes class="itunes col-sm-6"></itunes>
-      <!-- <i class="fas fa-2x fa-arrow-left" @click="toggleHidden"></i> -->
-      <my-tunes class="my-tunes col-sm-6"></my-tunes>
+    <itunes class="col-sm-6"></itunes>
+    <!-- <i class="fas fa-2x fa-arrow-left" @click="toggleHidden"></i> -->
+    <my-tunes class="col-sm-6"></my-tunes>
   </div>
 </template>
 
@@ -14,7 +22,7 @@
     name: 'home',
     data() {
       return {
-        hidden: true
+        artist: ''
       }
     },
     components: {
@@ -24,24 +32,17 @@
     methods: {
       toggleHidden() {
         this.hidden = !this.hidden
-      }
+      },
+      musicSearch() {
+            this.$store.dispatch('getMusicByArtist', this.artist)
+        },
     }
   }
 </script>
 
 
 <style>
-  .my-tunes {
-    display: inline-block;
-    min-height: 500px;
-    min-width: 50%;
-    background: green;
-  }
-
-  .itunes {
-    display: inline-block;
-    background: red;
-    min-height: 500px;
-    min-width: 45%;
+  .head{
+    background-color: rgb(200, 200, 200)
   }
 </style>

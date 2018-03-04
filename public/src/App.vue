@@ -18,4 +18,7 @@
 </script>
 
 <style>
+  .container-fluid{
+    background-color: #e3e3e3;
+  }
 </style>

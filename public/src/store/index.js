@@ -123,6 +123,28 @@ var store = new vuex.Store({
           console.error(err)
         })
     },
+    addPlaylist({commit, dispatch}, payload){
+      myDB
+        .post('playlists', payload)
+        .then(res => {
+          dispatch('getMyPlaylists')
+          dispatch('getMyPlaylist', res.data)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
+    removePlaylist({commit, dispatch}, payload){
+      myDB
+        .delete('playlists/' + payload._id)
+        .then(res => {
+          dispatch('getMyPlaylists')
+          commit('setActivePlaylist', {})
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    }
   }
 })
 

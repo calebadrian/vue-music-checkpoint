@@ -2,8 +2,17 @@
     <div class="my-tunes">
         <h1>List of MyTunes</h1>
         <div class="row">
-            <div v-for="playlist in myPlaylists">
-                <h5 class="d-block" @click="setActivePlaylist(playlist)">{{playlist.name}}</h5>
+            <div class="col-sm-12">
+                <form @submit.prevent="createPlaylist">
+                    <input type="text" v-model="toCreate" placeholder="playlist name">
+                    <button class="btn-success" type="submit">Create Playlist</button>
+                    <button class="btn-danger" type="reset">Reset Form</button>
+                </form>
+                <div v-for="playlist in myPlaylists">
+                    <button class="btn-info" @click="setActivePlaylist(playlist)">{{playlist.name}}</button>
+                    <button class="btn-danger" @click="removePlaylist(playlist)">Remove {{playlist.name}}</button>
+                </div>
+                <h5>Active Playlist: {{myPlaylist.name}}</h5>
             </div>
             <div class="col-sm-12 d-flex flex-column" v-for="song in myPlaylist.songs">
                 <div class="d-flex justify-content-between align-items-center pb-3 pt-3">
@@ -19,9 +28,9 @@
                     <h6>{{song.collectionName}}</h6>
                     <h6>${{song.trackPrice}}</h6>
                     <div class="d-flex flex-column justify-content-between">
-                    <i @click="promotePlaylist(song)" class="fas fa-arrow-up"></i>
-                    <i @click="removeFromPlaylist(song)" class="fas fa-minus-circle mt-1 mb-1"></i>
-                    <i @click="demotePlaylist(song)" class="fas fa-arrow-down"></i>
+                        <i @click="promotePlaylist(song)" class="fas fa-arrow-up"></i>
+                        <i @click="removeFromPlaylist(song)" class="fas fa-minus-circle mt-1 mb-1"></i>
+                        <i @click="demotePlaylist(song)" class="fas fa-arrow-down"></i>
                     </div>
                 </div>
             </div>
@@ -37,7 +46,7 @@
         },
         data() {
             return {
-                playing: false
+                toCreate: ''
             }
         },
         methods: {
@@ -47,40 +56,40 @@
             },
             promotePlaylist(song) {
                 var map = []
-                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
                     var mySong = this.$store.state.activePlaylist.songs[i]
-                    if (mySong._id == song._id){
+                    if (mySong._id == song._id) {
                         this.$store.state.activePlaylist.songs.splice(i, 1)
                         this.$store.state.activePlaylist.songs.splice(i - 1, 0, song)
                     }
                 }
-                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
                     map[i] = this.$store.state.activePlaylist.songs[i]._id
                 }
-                this.$store.dispatch('setPlaylistOrder', {playlist: this.$store.state.activePlaylist, map: map})
+                this.$store.dispatch('setPlaylistOrder', { playlist: this.$store.state.activePlaylist, map: map })
             },
             demotePlaylist(song) {
                 var map = []
-                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
                     var mySong = this.$store.state.activePlaylist.songs[i]
-                    if (mySong._id == song._id){
+                    if (mySong._id == song._id) {
                         this.$store.state.activePlaylist.songs.splice(i, 1)
                         this.$store.state.activePlaylist.songs.splice(i + 1, 0, song)
                         break;
                     }
                 }
-                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
                     map[i] = this.$store.state.activePlaylist.songs[i]._id
                 }
-                this.$store.dispatch('setPlaylistOrder', {playlist: this.$store.state.activePlaylist, map: map})
+                this.$store.dispatch('setPlaylistOrder', { playlist: this.$store.state.activePlaylist, map: map })
             },
             checkPlay(song) {
-                for (var i = 0; i < this.$store.state.activeSongs.length; i++){
-                    var mySong = this.$store.state.activeSongs[i]
-                    if (mySong._id == song._id){
+                for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
+                    var mySong = this.$store.state.activePlaylist.songs[i]
+                    if (mySong._id == song._id) {
                         var audioElem = document.getElementById(mySong._id)
                         var playElem = document.getElementById(mySong.trackId)
-                        if (audioElem.paused){
+                        if (audioElem.paused) {
                             audioElem.play()
                             playElem.classList.remove('fa-play-circle')
                             playElem.classList.add('fa-pause-circle')
@@ -92,18 +101,18 @@
                     } else {
                         document.getElementById(mySong._id).pause()
                         var pauseElem = document.getElementById(mySong.trackId)
-                        if (pauseElem.classList.contains('fa-pause-circle')){
+                        if (pauseElem.classList.contains('fa-pause-circle')) {
                             pauseElem.classList.remove('fa-pause-circle')
                             pauseElem.classList.add('fa-play-circle')
                         }
                     }
                 }
             },
-            mute(song){
+            mute(song) {
                 var muteElem = document.getElementById(song._id)
                 var muteSymbol = document.getElementById(song.trackName)
                 muteElem.muted = !muteElem.muted
-                if (muteSymbol.classList.contains('fa-volume-up')){
+                if (muteSymbol.classList.contains('fa-volume-up')) {
                     muteSymbol.classList.remove('fa-volume-up')
                     muteSymbol.classList.add('fa-volume-off')
                 } else {
@@ -111,8 +120,19 @@
                     muteSymbol.classList.add('fa-volume-up')
                 }
             },
-            setActivePlaylist(playlist){
-                this.$store.dispatch('setActivePlaylist', playlist)
+            setActivePlaylist(playlist) {
+                this.$store.dispatch('getMyPlaylist', playlist)
+            },
+            createPlaylist(){
+                this.$store.dispatch('addPlaylist', {name: this.toCreate})
+            },
+            removePlaylist(playlist){
+                var choice = confirm("Are you sure you would like to remove this playlist?")
+                if (choice){
+                    this.$store.dispatch('removePlaylist', playlist)
+                } else {
+                    return
+                }
             }
         },
         computed: {
@@ -131,7 +151,8 @@
     .full-width {
         width: 100%;
     }
-    .play:hover{
+
+    .play:hover {
         transition: linear all .3s;
         color: blue
     }
