@@ -10,9 +10,16 @@
                     <button class="btn-success" type="submit">Create Playlist</button>
                     <button class="btn-danger" type="reset">Reset Form</button>
                 </form>
-                <div class="mb-2" v-for="playlist in myPlaylists">
-                    <button class="btn-info" @click="setActivePlaylist(playlist)">{{playlist.name}}</button>
-                    <button class="btn-danger" @click="removePlaylist(playlist)">Remove {{playlist.name}}</button>
+                <div class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        Dropdown button
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" v-for="playlist in myPlaylists" @click="setActivePlaylist(playlist)">
+                            <p @click="setActivePlaylist(playlist)">{{playlist.name}}</p>
+                        </a>
+                    </div>
                 </div>
                 <h5>Songs for {{myPlaylist.name}}: </h5>
             </div>
@@ -145,7 +152,7 @@
                     return
                 }
             },
-            toggleHidden(){
+            toggleHidden() {
                 this.hidden = !this.hidden
             }
         },
