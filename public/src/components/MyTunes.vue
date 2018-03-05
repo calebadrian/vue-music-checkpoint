@@ -59,6 +59,10 @@
                 for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
                     var mySong = this.$store.state.activePlaylist.songs[i]
                     if (mySong._id == song._id) {
+                        if (i == 0){
+                            alert(mySong.trackName + " is already at the top of your playlist!")
+                            return
+                        }
                         this.$store.state.activePlaylist.songs.splice(i, 1)
                         this.$store.state.activePlaylist.songs.splice(i - 1, 0, song)
                     }
@@ -73,6 +77,9 @@
                 for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
                     var mySong = this.$store.state.activePlaylist.songs[i]
                     if (mySong._id == song._id) {
+                        if (i == this.$store.state.activePlaylist.songs.length - 1){
+                            alert(mySong.trackName + " is already at the bottom of your playlist")
+                        }
                         this.$store.state.activePlaylist.songs.splice(i, 1)
                         this.$store.state.activePlaylist.songs.splice(i + 1, 0, song)
                         break;
