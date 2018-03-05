@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <div class="col-sm-12 d-flex flex-column align-items-center head">
+    <div class="col-sm-12 d-flex flex-column align-items-center justify-content-center head">
         <h1>iTunes Search</h1>
         <form @submit.prevent="musicSearch">
             <input type="text" v-model="artist" placeholder="artist">
@@ -43,6 +43,7 @@
 
 <style>
   .head{
-    background-color: rgb(200, 200, 200)
+    background-color: rgb(200, 200, 200);
+    min-height: 9rem
   }
 </style>

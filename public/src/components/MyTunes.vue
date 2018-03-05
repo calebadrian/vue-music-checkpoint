@@ -1,18 +1,20 @@
 <template>
     <div class="my-tunes">
-        <h1>List of MyTunes</h1>
         <div class="row">
-            <div class="col-sm-12">
-                <form @submit.prevent="createPlaylist">
+            <div class="col-sm-12 d-flex flex-column align-items-center">
+                <h1>Your Playlists</h1>
+                <h4>Create a new playlist or choose from the ones below</h4>
+                <button class="btn-success mb-2" @click="toggleHidden">Add a Playlist</button>
+                <form class="mb-3" v-if="!hidden" @submit.prevent="createPlaylist">
                     <input type="text" v-model="toCreate" placeholder="playlist name">
                     <button class="btn-success" type="submit">Create Playlist</button>
                     <button class="btn-danger" type="reset">Reset Form</button>
                 </form>
-                <div v-for="playlist in myPlaylists">
+                <div class="mb-2" v-for="playlist in myPlaylists">
                     <button class="btn-info" @click="setActivePlaylist(playlist)">{{playlist.name}}</button>
                     <button class="btn-danger" @click="removePlaylist(playlist)">Remove {{playlist.name}}</button>
                 </div>
-                <h5>Active Playlist: {{myPlaylist.name}}</h5>
+                <h5>Songs for {{myPlaylist.name}}: </h5>
             </div>
             <div class="col-sm-12 d-flex flex-column" v-for="song in myPlaylist.songs">
                 <div class="d-flex justify-content-between align-items-center pb-3 pt-3">
@@ -46,7 +48,8 @@
         },
         data() {
             return {
-                toCreate: ''
+                toCreate: '',
+                hidden: true
             }
         },
         methods: {
@@ -59,7 +62,7 @@
                 for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
                     var mySong = this.$store.state.activePlaylist.songs[i]
                     if (mySong._id == song._id) {
-                        if (i == 0){
+                        if (i == 0) {
                             alert(mySong.trackName + " is already at the top of your playlist!")
                             return
                         }
@@ -77,7 +80,7 @@
                 for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++) {
                     var mySong = this.$store.state.activePlaylist.songs[i]
                     if (mySong._id == song._id) {
-                        if (i == this.$store.state.activePlaylist.songs.length - 1){
+                        if (i == this.$store.state.activePlaylist.songs.length - 1) {
                             alert(mySong.trackName + " is already at the bottom of your playlist")
                         }
                         this.$store.state.activePlaylist.songs.splice(i, 1)
@@ -130,16 +133,20 @@
             setActivePlaylist(playlist) {
                 this.$store.dispatch('getMyPlaylist', playlist)
             },
-            createPlaylist(){
-                this.$store.dispatch('addPlaylist', {name: this.toCreate})
+            createPlaylist() {
+                this.hidden = !this.hidden
+                this.$store.dispatch('addPlaylist', { name: this.toCreate })
             },
-            removePlaylist(playlist){
+            removePlaylist(playlist) {
                 var choice = confirm("Are you sure you would like to remove this playlist?")
-                if (choice){
+                if (choice) {
                     this.$store.dispatch('removePlaylist', playlist)
                 } else {
                     return
                 }
+            },
+            toggleHidden(){
+                this.hidden = !this.hidden
             }
         },
         computed: {
