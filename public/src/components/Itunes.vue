@@ -7,7 +7,10 @@
                 <h6>Artist: {{result.artistName}}</h6>
                 <h6>Album: {{result.collectionName}}</h6>
                 <h6>Song Price: ${{result.trackPrice}}</h6>
-                <button @click="addToMyPlaylist(result)" class="btn-info">Add To Playlist</button>
+                <div v-for="playlist in myPlaylists">
+                    <button class="btn-info" @click="addToMyPlaylist(playlist, result)">Add To {{playlist.name}}</button>
+                </div>
+                <!-- <button @click="addToMyPlaylist(result)" class="btn-info">Add To Playlist</button> -->
                 <audio controls>
                     <source :src="result.previewUrl">
                 </audio>
@@ -24,17 +27,20 @@ export default {
             artist: ''
         }
     },
+    mounted() {
+        this.$store.dispatch('getMyPlaylists')
+    },
     methods: {
-        addToMyPlaylist(track) {
-            for (var i = 0; i < this.$store.state.activePlaylist.songs.length; i++){
-                var inPlaylist = this.$store.state.activePlaylist.songs[i]
+        addToMyPlaylist(playlist, track) {
+            for (var i = 0; i < playlist.songs.length; i++){
+                var inPlaylist = playlist.songs[i]
                 if (inPlaylist.trackId == track.trackId){
                     alert(track.trackName + " is already in this playlist!")
                     return
                 }
             }
-            track.playlistId = this.$store.state.activePlaylist._id
-            this.$store.dispatch('createSong', {playlist: this.$store.state.activePlaylist, track: track})
+            track.playlistId = playlist._id
+            this.$store.dispatch('createSong', {playlist: playlist, track: track})
         }
     },
     computed: {
@@ -43,6 +49,9 @@ export default {
         },
         myPlaylist() {
             return this.$store.state.activePlaylist
+        },
+        myPlaylists() {
+            return this.$store.state.myPlaylists
         }
     }
 }
