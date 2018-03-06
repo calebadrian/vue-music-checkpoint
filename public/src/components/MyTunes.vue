@@ -5,6 +5,7 @@
                 <h1>Your Playlists</h1>
                 <h4>Create a new playlist or choose from the ones below</h4>
                 <button class="btn-success mb-2" @click="toggleHidden">Add a Playlist</button>
+                <button class="btn-danger mb-2" @click="removePlaylist(myPlaylist)" v-if="removeHidden">Remove {{myPlaylist.name}}</button>
                 <form class="mb-3" v-if="!hidden" @submit.prevent="createPlaylist">
                     <input type="text" v-model="toCreate" placeholder="playlist name">
                     <button class="btn-success" type="submit">Create Playlist</button>
@@ -13,7 +14,7 @@
                 <div class="dropdown">
                     <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                         aria-expanded="false">
-                        Dropdown button
+                        Playlists
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" v-for="playlist in myPlaylists" @click="setActivePlaylist(playlist)">
@@ -56,7 +57,8 @@
         data() {
             return {
                 toCreate: '',
-                hidden: true
+                hidden: true,
+                removeHidden: false
             }
         },
         methods: {
@@ -138,6 +140,7 @@
                 }
             },
             setActivePlaylist(playlist) {
+                this.removeHidden = true
                 this.$store.dispatch('getMyPlaylist', playlist)
             },
             createPlaylist() {
@@ -147,6 +150,7 @@
             removePlaylist(playlist) {
                 var choice = confirm("Are you sure you would like to remove this playlist?")
                 if (choice) {
+                    this.removeHidden = false
                     this.$store.dispatch('removePlaylist', playlist)
                 } else {
                     return
