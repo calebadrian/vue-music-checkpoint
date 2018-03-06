@@ -7,10 +7,16 @@
                 <h6>Artist: {{result.artistName}}</h6>
                 <h6>Album: {{result.collectionName}}</h6>
                 <h6>Song Price: ${{result.trackPrice}}</h6>
-                <div v-for="playlist in myPlaylists">
-                    <button class="btn-info" @click="addToMyPlaylist(playlist, result)">Add To {{playlist.name}}</button>
+                <div class="btn-group dropright">
+                    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Add to Playlist
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" v-for="playlist in myPlaylists" @click="setActivePlaylist(playlist)">
+                            <p @click="addToMyPlaylist(playlist, result)">{{playlist.name}}</p>
+                        </a>
+                    </div>
                 </div>
-                <!-- <button @click="addToMyPlaylist(result)" class="btn-info">Add To Playlist</button> -->
                 <audio controls>
                     <source :src="result.previewUrl">
                 </audio>

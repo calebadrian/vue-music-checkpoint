@@ -5,7 +5,7 @@
                 <h1>Your Playlists</h1>
                 <h4>Create a new playlist or choose from the ones below</h4>
                 <button class="btn-success mb-2" @click="toggleHidden">Add a Playlist</button>
-                <button class="btn-danger mb-2" @click="removePlaylist(myPlaylist)" v-if="removeHidden">Remove {{myPlaylist.name}}</button>
+                <button class="btn-danger mb-2" @click="removePlaylist(myPlaylist)">Remove {{myPlaylist.name}}</button>
                 <form class="mb-3" v-if="!hidden" @submit.prevent="createPlaylist">
                     <input type="text" v-model="toCreate" placeholder="playlist name">
                     <button class="btn-success" type="submit">Create Playlist</button>
@@ -57,8 +57,7 @@
         data() {
             return {
                 toCreate: '',
-                hidden: true,
-                removeHidden: false
+                hidden: true
             }
         },
         methods: {
