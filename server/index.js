@@ -8,7 +8,16 @@ var playlistRoutes = require('./server-assets/routes/playlists')
 
 require("./server-assets/db/mlab-config");
 
-server.use(cors());
+var whitelist = ['http://localhost:8080', 'https://cadrianvuemusic.herokuapp.com'];
+var corsOptions = {
+	origin: function (origin, callback) {
+		var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+		callback(null, originIsWhitelisted);
+	},
+	credentials: true
+};
+
+server.use(cors(corsOptions));
 server.use(bp.json());
 server.use(bp.urlencoded({ extended: true }));
 server.use(express.static(__dirname + "/../public/dist"))
