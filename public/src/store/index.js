@@ -123,6 +123,16 @@ var store = new vuex.Store({
           console.error(err)
         })
     },
+    putSong({commit, dispatch}, payload){
+      myDB
+        .put('playlists/' + payload.song.playlistId + '/tracks/', payload)
+        .then(res => {
+          commit('setActivePlaylist', res.data)
+        })
+        .catch(err => {
+          console.error(err)
+        })
+    },
     addPlaylist({commit, dispatch}, payload){
       myDB
         .post('playlists', payload)
