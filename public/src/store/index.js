@@ -3,8 +3,10 @@ import vuex from 'vuex'
 import axios from 'axios'
 
 vue.use(vuex)
-var url = '//bcw-getter.herokuapp.com/?url=';
 var url2 = 'https://itunes.apple.com/search?term='
+
+var production = !window.location.host.includes('localhost');
+var url = production ? 'https://cadrianvuemusic.herokuapp.com/' : '//localhost:3000/';
 
 let itunesDB = axios.create({
   baseURL: url + encodeURIComponent(url2),
